@@ -9,3 +9,9 @@ class DataIngestionConfig: #This defines a class to hold configuration settings 
     source_URL: str#The URL from where the raw data will be downloaded.
     local_data_file: Path#The local file path where the downloaded data will be stored
     unzip_dir: Path
+
+@dataclass(frozen=True)
+class DataValidationConfig:
+    root_dir: Path
+    STATUS_FILE: str
+    ALL_REQUIRED_FILES: list
