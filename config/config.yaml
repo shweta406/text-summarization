@@ -1,0 +1,12 @@
+artifacts_root: artifacts
+
+#sab kch components ye sb artifacts folder me rhega
+#path/url ye sb store krana h toh config.yaml me store krate
+
+#data_ingestion ke andar data download krege
+
+data_ingestion:
+   root_dir: artifacts/data_ingestion
+   source_URL: https://github.com/entbappy/Branching-tutorial/raw/master/summarizer-data.zip
+   local_data_file: artifacts/data_ingestion/data.zip
+   unzip_dir: artifacts/data_ingestion
