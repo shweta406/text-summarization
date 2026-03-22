@@ -1,3 +1,4 @@
+import os
 from transformers import TrainingArguments, Trainer
 from transformers import DataCollatorForSeq2Seq
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
