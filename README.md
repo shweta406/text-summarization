@@ -1,6 +1,3 @@
-Here’s the README content you can copy into README.md:
-
-```markdown
 # Text Summarization
 
 Web-based NLP application that trains and serves a Pegasus-based abstractive summarizer, with a Streamlit UI for inference.
