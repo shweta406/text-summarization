@@ -42,53 +42,62 @@ def download_model_from_hub():
         return str(model_dir), str(tokenizer_dir)
     
     try:
-        st.info("⏳ Downloading model from HuggingFace Hub (first run only)...")
+        print("⏳ Downloading model from HuggingFace Hub (first run only)...")
         
         # Download tokenizer
-        st.write("📥 Downloading tokenizer...")
+        print("📥 Downloading tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained("google/pegasus-samsum")
         tokenizer.save_pretrained(str(tokenizer_dir))
         
         # Download model
-        st.write("📥 Downloading model (this may take 2-3 minutes)...")
+        print("📥 Downloading model (this may take 2-3 minutes)...")
         model = AutoModelForSeq2SeqLM.from_pretrained(
             "google/pegasus-samsum",
             torch_dtype=torch.float32
         )
         model.save_pretrained(str(model_dir))
         
-        st.success("✅ Model downloaded successfully!")
+        print("✅ Model downloaded successfully!")
         
         return str(model_dir), str(tokenizer_dir)
         
     except Exception as e:
-        st.error(f"❌ Error downloading model: {str(e)}")
+        print(f"❌ Error downloading model: {str(e)}")
         raise e
 
 
-@st.cache_resource
+# Simple cache to avoid re-downloading model
+_model_cache = {}
+
 def get_model_paths():
     """
-    Cached function to get model paths
-    Ensures model is downloaded only once per session
+    Get model paths with simple caching (no Streamlit decorator)
+    Ensures model is downloaded only once per process
     """
+    if "model_paths" in _model_cache:
+        return _model_cache["model_paths"]
+    
     model_dir, tokenizer_dir = ensure_model_directory()
     
     # Check if model exists
     if not (model_dir / "config.json").exists():
         # Download from HuggingFace Hub
-        return download_model_from_hub()
+        paths = download_model_from_hub()
+    else:
+        paths = (str(model_dir), str(tokenizer_dir))
     
-    return str(model_dir), str(tokenizer_dir)
+    _model_cache["model_paths"] = paths
+    return paths
 
 
 def init_for_deployment():
     """
     Initialize model paths for deployment
     Call this at the start of your app before importing PredictionPipeline
+    Runs silently without Streamlit UI commands
     """
     try:
         get_model_paths()
     except Exception as e:
-        st.error(f"Failed to initialize model: {str(e)}")
-        st.stop()
+        print(f"Failed to initialize model: {str(e)}")
+        raise

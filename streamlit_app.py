@@ -6,28 +6,42 @@ Your original app.py remains completely unchanged
 """
 
 import streamlit as st
-from model_handler import init_for_deployment
-
-# Initialize model on app startup
-if "model_initialized" not in st.session_state:
-    st.session_state.model_initialized = False
-    init_for_deployment()
-    st.session_state.model_initialized = True
-
-# Now run the original app
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from textSummarizer.pipeline.prediction import PredictionPipeline
-
-# Configure page
+# Configure page FIRST - must be before any other Streamlit commands
 st.set_page_config(
     page_title="Text Summarization",
     page_icon="📝",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+from model_handler import init_for_deployment
+
+# Initialize model on app startup
+if "model_initialized" not in st.session_state:
+    st.session_state.model_initialized = False
+    st.session_state.init_error = None
+    try:
+        init_for_deployment()
+        st.session_state.model_initialized = True
+    except Exception as e:
+        st.session_state.init_error = str(e)
+        st.session_state.model_initialized = False
+
+# Check if initialization failed
+if st.session_state.init_error:
+    st.error(f"❌ Failed to initialize model: {st.session_state.init_error}")
+    st.stop()
+
+if not st.session_state.model_initialized:
+    st.warning("⏳ Initializing model...")
+    st.stop()
+
+# Now run the original app
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from textSummarizer.pipeline.prediction import PredictionPipeline
 
 st.title("📝 Text Summarization Application")
 st.markdown("---")
