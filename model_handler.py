@@ -59,15 +59,10 @@ def download_model_from_hub():
         
         # Download model
         print("📥 Downloading model (this may take 2-3 minutes)...")
-        try:
-            # Try new API first (transformers >= 5.0)
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-        except TypeError:
-            # Fallback to old API (transformers < 5.0)
-            model = AutoModelForSeq2SeqLM.from_pretrained(
-                model_name,
-                torch_dtype=torch.float32
-            )
+        model = AutoModelForSeq2SeqLM.from_pretrained(
+            model_name,
+            torch_dtype=torch.float32
+        )
         model.save_pretrained(str(model_dir))
         print("✅ Model saved successfully!")
         

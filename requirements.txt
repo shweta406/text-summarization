@@ -1,14 +1,14 @@
-transformers>=4.42.0 #use huggingface library for text summarization - compatible version
+transformers==4.42.3
 transformers[sentencepiece]
 datasets==2.19.1
-sacrebleu  #text summarization ke liye we require rough matrix which is basically evaluation matrix toh uske liye sacreblue chahiye hota
+sacrebleu
 rouge-score
 py7zr
 pandas
 nltk
 PyYAML
 matplotlib
-torch # if device me gpu ho toh gpu version install krna
+torch
 notebook
 boto3
 mypy-boto3-s3
@@ -17,5 +17,5 @@ python-box==6.0.2
 ensure==1.0.2
 streamlit==1.28.0
 evaluate
-huggingface-hub>=0.20.0
+huggingface-hub==0.20.3
 -e .  
