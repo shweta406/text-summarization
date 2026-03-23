@@ -29,7 +29,7 @@ def download_model_from_hub():
     Download the fine-tuned model from HuggingFace Hub
     Using cached resources to avoid re-downloading
     """
-    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, GenerationConfig
     import torch
     
     model_dir, tokenizer_dir = ensure_model_directory()
@@ -63,6 +63,14 @@ def download_model_from_hub():
             model_name,
             torch_dtype=torch.float32
         )
+
+        # Move generation params into generation_config to avoid warnings
+        gen_config = GenerationConfig.from_model_config(model.config)
+        gen_config.save_pretrained(str(model_dir))
+        for attr in ["max_length", "min_length", "num_beams", "length_penalty", "forced_eos_token_id"]:
+            if hasattr(model.config, attr):
+                setattr(model.config, attr, None)
+
         model.save_pretrained(str(model_dir))
         print("✅ Model saved successfully!")
         
