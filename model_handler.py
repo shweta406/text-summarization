@@ -64,9 +64,18 @@ def download_model_from_hub():
             torch_dtype=torch.float32
         )
 
-        # Move generation params into generation_config to avoid warnings
-        gen_config = GenerationConfig.from_model_config(model.config)
+        # Create an explicit GenerationConfig to silence warnings and keep custom settings
+        gen_config = GenerationConfig(
+            max_length=128,
+            min_length=32,
+            num_beams=8,
+            length_penalty=0.8,
+            forced_eos_token_id=model.config.eos_token_id,
+        )
         gen_config.save_pretrained(str(model_dir))
+        model.generation_config = gen_config
+
+        # Clear legacy generation params from model.config to avoid warnings
         for attr in ["max_length", "min_length", "num_beams", "length_penalty", "forced_eos_token_id"]:
             if hasattr(model.config, attr):
                 setattr(model.config, attr, None)
