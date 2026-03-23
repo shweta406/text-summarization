@@ -80,5 +80,3 @@ Configs for each stage are in `config/config.yaml`.
 - Slow startup: first run downloads Pegasus weights if artifacts are missing.
 - Memory: Pegasus can be memory-intensive; use CPU with enough RAM or a GPU-enabled environment.
 
-## License
-See LICENSE.
