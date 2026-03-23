@@ -48,16 +48,19 @@ def download_model_from_hub():
     try:
         print("⏳ Downloading model from HuggingFace Hub (first run only)...")
         
+        # Use the base Pegasus model for CNN/DailyMail summarization
+        model_name = "google/pegasus-cnn_dailymail"
+        
         # Download tokenizer
         print("📥 Downloading tokenizer...")
-        tokenizer = AutoTokenizer.from_pretrained("google/pegasus-samsum")
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
         tokenizer.save_pretrained(str(tokenizer_dir))
         print("✅ Tokenizer saved successfully!")
         
         # Download model
         print("📥 Downloading model (this may take 2-3 minutes)...")
         model = AutoModelForSeq2SeqLM.from_pretrained(
-            "google/pegasus-samsum",
+            model_name,
             torch_dtype=torch.float32
         )
         model.save_pretrained(str(model_dir))
