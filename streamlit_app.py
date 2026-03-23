@@ -23,12 +23,14 @@ from model_handler import init_for_deployment
 if "model_initialized" not in st.session_state:
     st.session_state.model_initialized = False
     st.session_state.init_error = None
-    try:
-        init_for_deployment()
-        st.session_state.model_initialized = True
-    except Exception as e:
-        st.session_state.init_error = str(e)
-        st.session_state.model_initialized = False
+    
+    with st.spinner("⏳ Initializing model (this may take 2-3 minutes on first run)..."):
+        try:
+            init_for_deployment()
+            st.session_state.model_initialized = True
+        except Exception as e:
+            st.session_state.init_error = str(e)
+            st.session_state.model_initialized = False
 
 # Check if initialization failed
 if st.session_state.init_error:
@@ -36,7 +38,7 @@ if st.session_state.init_error:
     st.stop()
 
 if not st.session_state.model_initialized:
-    st.warning("⏳ Initializing model...")
+    st.error("❌ Model initialization failed. Please refresh the page.")
     st.stop()
 
 # Now run the original app

@@ -34,11 +34,15 @@ def download_model_from_hub():
     
     model_dir, tokenizer_dir = ensure_model_directory()
     
-    # Check if model already exists
-    model_path = model_dir / "config.json"
-    tokenizer_path = tokenizer_dir / "tokenizer_config.json"
+    # Check if model already exists with all required files
+    model_weights = [
+        model_dir / "pytorch_model.bin",
+        model_dir / "model.safetensors"
+    ]
+    tokenizer_files = tokenizer_dir / "tokenizer_config.json"
     
-    if model_path.exists() and tokenizer_path.exists():
+    if any(f.exists() for f in model_weights) and tokenizer_files.exists():
+        print("✅ Model already cached locally!")
         return str(model_dir), str(tokenizer_dir)
     
     try:
@@ -48,6 +52,7 @@ def download_model_from_hub():
         print("📥 Downloading tokenizer...")
         tokenizer = AutoTokenizer.from_pretrained("google/pegasus-samsum")
         tokenizer.save_pretrained(str(tokenizer_dir))
+        print("✅ Tokenizer saved successfully!")
         
         # Download model
         print("📥 Downloading model (this may take 2-3 minutes)...")
@@ -56,8 +61,11 @@ def download_model_from_hub():
             torch_dtype=torch.float32
         )
         model.save_pretrained(str(model_dir))
+        print("✅ Model saved successfully!")
         
-        print("✅ Model downloaded successfully!")
+        # Verify files exist
+        if not any(f.exists() for f in model_weights):
+            raise RuntimeError("Model files were not saved successfully!")
         
         return str(model_dir), str(tokenizer_dir)
         
@@ -79,11 +87,17 @@ def get_model_paths():
     
     model_dir, tokenizer_dir = ensure_model_directory()
     
-    # Check if model exists
-    if not (model_dir / "config.json").exists():
+    # Check if model files exist (pytorch_model.bin or model.safetensors)
+    model_weights = [
+        model_dir / "pytorch_model.bin",
+        model_dir / "model.safetensors"
+    ]
+    
+    if not any(f.exists() for f in model_weights):
         # Download from HuggingFace Hub
         paths = download_model_from_hub()
     else:
+        print("✅ Model already available!")
         paths = (str(model_dir), str(tokenizer_dir))
     
     _model_cache["model_paths"] = paths
