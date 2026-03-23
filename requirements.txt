@@ -1,4 +1,4 @@
-transformers>=4.45.0 #use huggingface library for text summarization - updated for compatibility
+transformers>=4.42.0 #use huggingface library for text summarization - compatible version
 transformers[sentencepiece]
 datasets==2.19.1
 sacrebleu  #text summarization ke liye we require rough matrix which is basically evaluation matrix toh uske liye sacreblue chahiye hota
